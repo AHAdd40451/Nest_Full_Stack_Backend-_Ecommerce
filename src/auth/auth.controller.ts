@@ -13,24 +13,19 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/users/users.service';
 import { LoginDto, RefreshTokenDto } from './dto/auth.dto';
-import { CreateUserDto } from 'src/users/dto/User.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from './Guards/jwt.guards';
+import { CreateUserDto } from './dto/auth.dto';
+
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private userService: UserService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('signup')
   @UsePipes(new ValidationPipe({ transform: true }))
   async signup(@Body() SignUpDto: CreateUserDto, @Res() res) {
     const { email, password, username } = SignUpDto;
-    const existingUser = await this.userService.findOne(email);
+    const existingUser = await this.authService.findOne(email);
 
     if (existingUser) {
       return res.status(HttpStatus.FORBIDDEN).json({
@@ -38,7 +33,7 @@ export class AuthController {
       });
     }
     try {
-      const user = await this.userService.create({
+      const user = await this.authService.create({
         email,
         password,
         username,
@@ -61,7 +56,7 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async login(@Body() loginDto: LoginDto, @Res() res) {
     const { email } = loginDto;
-    const existingUser = await this.userService.findOne(email);
+    const existingUser = await this.authService.findOne(email);
     try {
       if (!existingUser) {
         return res.status(HttpStatus.NOT_FOUND).json({
