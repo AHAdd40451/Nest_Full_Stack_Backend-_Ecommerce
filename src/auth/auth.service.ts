@@ -33,7 +33,7 @@ export class AuthService {
   }
   async generateResetToken(email: string) {
     const payload = { email };
-    return this.jwtService.sign(payload, { expiresIn: '12h' });
+    return this.jwtService.sign(payload, { expiresIn: '5m' });
   }
   async generateRefreshToken(user: TokenDto) {
     const payload = { email: user.email, userId: user._id };
@@ -87,12 +87,8 @@ export class AuthService {
     return await bcrypt.hash(password, 10);
   }
 
-  
-  async updatePassword(
-    userId: string,
-    newPassword: string,
-  ): Promise<User | null> {
-    const enc = this.encryptPassword(newPassword);
+  async updatePassword(userId: any, newPassword: string): Promise<User | null> {
+    const enc = await this.encryptPassword(newPassword);
     return this.userModel
       .findByIdAndUpdate(userId, { password: enc }, { new: true })
       .exec();
@@ -120,18 +116,23 @@ export class AuthService {
     email: string,
     token: string,
     newPassword: string,
-  ): Promise<void> {
+  ): Promise<any> {
     const user = await this.findOne(email);
 
     if (!user) {
       throw new Error('User not found.');
     }
-    const isValidToken = this.jwtService.verify(token);
+    const isValidToken = await this.jwtService.verify(token);
 
     if (isValidToken.email !== email) {
       throw new Error('Invalid or expired token.');
     }
 
-    await this.updatePassword(user._id as string, newPassword);
+    try {
+      const result = await this.updatePassword(user._id, newPassword);
+      return result;
+    } catch (error) {
+      return error;
+    }
   }
 }

@@ -13,7 +13,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto, LoginDto, RefreshTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RefreshTokenDto,
+  ResetPasswordDto,
+} from './dto/auth.dto';
 import { CreateUserDto } from './dto/auth.dto';
 
 @Controller('auth')
@@ -121,8 +126,7 @@ export class AuthController {
       const { email, token, newPassword } = resetPasswordDto;
       await this.authService.resetPassword(email, token, newPassword);
       return res.status(HttpStatus.OK).json({
-        message:
-          'Password reset email sent. Check your email for instructions.',
+        message: 'Password reset Success',
       });
     } catch (error) {
       return res.status(HttpStatus.BAD_REQUEST).json({
