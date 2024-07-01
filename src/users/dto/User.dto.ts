@@ -4,13 +4,29 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 /* eslint-disable prettier/prettier */
 export class CreateUserDto {
   @IsNotEmpty()
-  @IsString()
-  username: string;
+  @IsOptional()
+  _id?: any;
 
+  @IsNotEmpty()
   @IsString()
-  displayName?: string;
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  role?: string;
 }
-
 
 export class UpdateUserDto {
   @IsOptional()
