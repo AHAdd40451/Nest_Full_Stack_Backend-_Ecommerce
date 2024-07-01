@@ -13,9 +13,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, RefreshTokenDto } from './dto/auth.dto';
+import { ForgotPasswordDto, LoginDto, RefreshTokenDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from './dto/auth.dto';
-
 
 @Controller('auth')
 export class AuthController {
@@ -90,6 +89,44 @@ export class AuthController {
     } catch (error) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'Unauthorized',
+        error: error.message,
+      });
+    }
+  }
+
+  @Post('forgot-password')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+    @Res() res,
+  ) {
+    try {
+      await this.authService.forgotPassword(forgotPasswordDto);
+      return res.status(HttpStatus.OK).json({
+        message:
+          'Password reset email sent. Check your email for instructions.',
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Failed to initiate password reset process.',
+        error: error.message,
+      });
+    }
+  }
+
+  @Post('reset-password')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res() res) {
+    try {
+      const { email, token, newPassword } = resetPasswordDto;
+      await this.authService.resetPassword(email, token, newPassword);
+      return res.status(HttpStatus.OK).json({
+        message:
+          'Password reset email sent. Check your email for instructions.',
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Failed to initiate password reset process.',
         error: error.message,
       });
     }

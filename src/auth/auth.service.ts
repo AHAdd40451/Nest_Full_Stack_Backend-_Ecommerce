@@ -5,7 +5,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto, TokenDto } from './dto/auth.dto';
+import { ForgotPasswordDto, LoginDto, TokenDto } from './dto/auth.dto';
 import { CreateUserDto } from './dto/auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/schemas/user.schema';
@@ -29,6 +29,10 @@ export class AuthService {
 
   async generateAccessToken(user: TokenDto) {
     const payload = { email: user.email, userId: user._id };
+    return this.jwtService.sign(payload, { expiresIn: '12h' });
+  }
+  async generateResetToken(email: string) {
+    const payload = { email };
     return this.jwtService.sign(payload, { expiresIn: '12h' });
   }
   async generateRefreshToken(user: TokenDto) {
@@ -81,5 +85,53 @@ export class AuthService {
 
   async encryptPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
+  }
+
+  
+  async updatePassword(
+    userId: string,
+    newPassword: string,
+  ): Promise<User | null> {
+    const enc = this.encryptPassword(newPassword);
+    return this.userModel
+      .findByIdAndUpdate(userId, { password: enc }, { new: true })
+      .exec();
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+    const { email } = forgotPasswordDto;
+    const user = await this.findOne(email);
+
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    try {
+      const resetToken = await this.generateResetToken(email);
+      console.log(
+        `Sending password reset email to ${email} with token: ${resetToken}`,
+      );
+    } catch (error) {
+      throw new Error(`Failed to send password reset email: ${error.message}`);
+    }
+  }
+
+  async resetPassword(
+    email: string,
+    token: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.findOne(email);
+
+    if (!user) {
+      throw new Error('User not found.');
+    }
+    const isValidToken = this.jwtService.verify(token);
+
+    if (isValidToken.email !== email) {
+      throw new Error('Invalid or expired token.');
+    }
+
+    await this.updatePassword(user._id as string, newPassword);
   }
 }

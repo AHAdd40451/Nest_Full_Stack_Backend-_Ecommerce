@@ -27,7 +27,17 @@ export class RefreshTokenDto {
   @IsNotEmpty()
   email: string;
 }
+export class ResetPasswordDto {
+  @IsNotEmpty()
+  token: string;
 
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  newPassword: string;
+}
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -66,4 +76,9 @@ export class UpdateUserDto {
 
   @IsOptional()
   avatarUrl?: string;
+}
+
+export class ForgotPasswordDto {
+  @IsEmail()
+  email: string;
 }
