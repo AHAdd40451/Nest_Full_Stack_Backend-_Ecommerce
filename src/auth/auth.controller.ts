@@ -17,6 +17,7 @@ import { UserService } from 'src/users/users.service';
 import { LoginDto, RefreshTokenDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/users/dto/User.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './Guards/jwt.guards';
 
 @Controller('auth')
 export class AuthController {
@@ -79,7 +80,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(JwtAuthGuard)
   @Post('refresh-token')
   @UsePipes(new ValidationPipe({ transform: true }))
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res) {
