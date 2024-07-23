@@ -32,7 +32,6 @@ export class User extends Document {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// Pre-save hook to automatically hash the password before saving
 UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();

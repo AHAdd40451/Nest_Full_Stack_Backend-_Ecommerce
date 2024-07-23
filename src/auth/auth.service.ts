@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { ForgotPasswordDto, LoginDto, TokenDto } from './dto/auth.dto';
 import { CreateUserDto } from './dto/auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/schemas/user.schema';
+import { User } from 'src/schemas/User.s/chema';
 import { Model } from 'mongoose';
 
 @Injectable()

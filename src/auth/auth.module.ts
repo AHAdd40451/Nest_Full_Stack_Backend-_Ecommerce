@@ -8,7 +8,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { getEnv } from 'src/utils/utils';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../schemas/user.schema';
+import { User, UserSchema } from '../schemas/User.s/chema';
 
 @Module({
   imports: [
