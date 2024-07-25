@@ -1,9 +1,6 @@
-/* eslint-disable prettier/prettier */
-
-// src/auth/strategies/jwt.strategy.ts
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../auth.service';
 import { getEnv } from 'src/utils/utils';
 
@@ -18,10 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    try {
-      return { email: payload.email };
-    } catch (error) {
-      throw new UnauthorizedException('Unauthorized', error.message);
+    const user = await this.authService.validateUser(payload.email);
+    if (!user) {
+      throw new UnauthorizedException();
     }
+    return user;
   }
 }

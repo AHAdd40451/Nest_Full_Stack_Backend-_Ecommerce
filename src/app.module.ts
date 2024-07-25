@@ -8,7 +8,7 @@ import { ProductsModule } from "./products/products.module";
 @Module({
   imports: [
     AuthModule,
-    ProductsModule,
+    // ProductsModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
