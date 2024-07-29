@@ -7,7 +7,7 @@ export class GenericService<T> {
     private readonly modelName: string
   ) {}
 
-  async create(data: CreateUserDto): Promise<T | null> {
+  async create(data: any): Promise<T | null> {
     return this.prisma[this.modelName].create({ data });
   }
 

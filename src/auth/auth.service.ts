@@ -4,14 +4,15 @@ import { PrismaClient, User } from "@prisma/client";
 import { GenericService } from "src/Generic/generic.service";
 import { CreateUserDto } from "./dto/auth.dto";
 import * as bcrypt from "bcrypt";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
   private readonly userService: GenericService<User>;
+  private prismaService: PrismaService;
 
   constructor(private jwtService: JwtService) {
-    const prisma = new PrismaClient();
-    this.userService = new GenericService<User>(prisma, "user");
+    this.userService = new GenericService<User>(this.prismaService, "user");
   }
 
   async findOne(email: string): Promise<User | null> {
@@ -70,6 +71,7 @@ export class AuthService {
     token: string,
     newPassword: string
   ): Promise<void> {
+    ``;
     // Your reset password logic here
   }
 }
